@@ -1,6 +1,6 @@
 @page {
   size: A4;
-  margin: 13mm;
+  margin: 14mm 15mm 12mm;
 }
 
 :root {
@@ -27,16 +27,16 @@ html {
 body {
   margin: 0;
   font-family: var(--sans);
-  font-size: 9.2pt;
-  line-height: 1.34;
+  font-size: 9pt;
+  line-height: 1.38;
   color: var(--ink);
 }
 
 /* --- Header (full width) --- */
 .header {
   border-bottom: 1.5px solid var(--accent);
-  padding-bottom: 3.5mm;
-  margin-bottom: 5mm;
+  padding-bottom: 5mm;
+  margin-bottom: 6mm;
 }
 .header h1 {
   font-family: var(--display);
@@ -54,9 +54,9 @@ body {
 /* --- Left rail --- */
 .sidebar {
   float: left;
-  width: 31%;
-  margin: 0 7mm 4mm 0;
-  padding-right: 6mm;
+  width: 30%;
+  margin: 0 9mm 4mm 0;
+  padding: 0 7mm 0 0;
   border-right: 1px solid var(--rule);
 }
 .avatar {
@@ -65,38 +65,39 @@ body {
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  margin: 0 auto 6mm;
+  margin: 0 auto 8mm;
 }
 .sidebar h3 {
   font-size: 8.8pt;
   font-weight: 600;
   color: var(--ink);
-  margin: 5mm 0 1.5mm;
-  padding-bottom: 1px;
+  margin: 7mm 0 2.5mm;
+  padding-bottom: 1.5px;
   border-bottom: 1px solid var(--rule);
 }
 .sidebar h3:first-of-type { margin-top: 0; }
 .sidebar p { font-size: 8.5pt; margin: 0 0 2px; }
-.sidebar ul { margin: 1mm 0 0; padding-left: 11px; }
+.sidebar ul { margin: 1.5mm 0 0; padding-left: 11px; }
 .sidebar ul.plain { list-style: none; padding-left: 0; }
-.sidebar li { font-size: 8.4pt; margin: 0 0 2px; }
+.sidebar ul.plain li { margin: 0 0 1.5mm; }
+.sidebar li { font-size: 8.4pt; margin: 0 0 2.5px; }
 .sidebar strong { font-weight: 600; }
 
 /* --- Main content (wraps around the floated rail) --- */
 .content h2 {
-  font-size: 12pt;
+  font-size: 11.5pt;
   font-weight: 600;
   letter-spacing: 0.005em;
   color: var(--ink);
   border-bottom: 1px solid var(--rule);
   padding-bottom: 2px;
-  margin: 9px 0 5px;
+  margin: 11px 0 6px;
 }
 .content h2:first-child { margin-top: 0; }
 .content h3 {
   font-size: 10.4pt;
   font-weight: 600;
-  margin: 8px 0 1px;
+  margin: 9px 0 2px;
 }
 .content h3 + p {
   color: var(--muted);
