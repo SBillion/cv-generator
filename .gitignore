@@ -1,0 +1,5 @@
+# Personal / generated files — never commit
+secrets.env
+photo.jpeg
+*.pdf
+*.html
