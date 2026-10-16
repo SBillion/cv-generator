@@ -7,7 +7,7 @@
 # Custom:   build.sh -c Acme -f billion.pdf
 #
 # Real contact details live in a gitignored secrets.env and are injected into the
-# {{LOCATION}} / {{PHONE}} / {{EMAIL}} placeholders at build time.
+# {{PHONE}} / {{EMAIL}} placeholders at build time.
 set -eu
 
 SRC_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -64,7 +64,6 @@ if [ -f "$SRC_DIR/secrets.env" ]; then
   # shellcheck disable=SC1091
   . "$SRC_DIR/secrets.env"
 fi
-[ -n "${LOCATION:-}" ] || LOCATION='{{LOCATION}}'
 [ -n "${PHONE:-}" ] || PHONE='{{PHONE}}'
 [ -n "${EMAIL:-}" ] || EMAIL='{{EMAIL}}'
 
@@ -77,7 +76,6 @@ if [ -f "$SRC_DIR/photo.jpeg" ]; then
 fi
 
 sed \
-  -e "s|{{LOCATION}}|$LOCATION|g" \
   -e "s|{{PHONE}}|$PHONE|g" \
   -e "s|{{EMAIL}}|$EMAIL|g" \
   "$SRC_MD" > "$BUILD_DIR/cv.md"

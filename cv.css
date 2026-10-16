@@ -1,6 +1,6 @@
 @page {
   size: A4;
-  margin: 14mm 15mm 12mm;
+  margin: 13mm 15mm 10mm;
 }
 
 :root {
@@ -27,16 +27,16 @@ html {
 body {
   margin: 0;
   font-family: var(--sans);
-  font-size: 9pt;
-  line-height: 1.38;
+  font-size: 8.8pt;
+  line-height: 1.36;
   color: var(--ink);
 }
 
 /* --- Header (full width) --- */
 .header {
   border-bottom: 1.5px solid var(--accent);
-  padding-bottom: 5mm;
-  margin-bottom: 6mm;
+  padding-bottom: 4mm;
+  margin-bottom: 5mm;
 }
 .header h1 {
   font-family: var(--display);

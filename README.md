@@ -36,7 +36,7 @@ Edit that file, then run the same command again to regenerate the PDF.
 
 ## Contact placeholders
 
-The Markdown files use `{{LOCATION}}`, `{{PHONE}}` and `{{EMAIL}}`. Real values
+The Markdown files use `{{PHONE}}` and `{{EMAIL}}`. Real values
 are read from `secrets.env` (gitignored) and injected at build time:
 
 ```sh
