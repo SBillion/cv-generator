@@ -17,6 +17,7 @@ Markdown + CSS → A4 PDF CV, generic or tailored per company, built with
 
 | Flag | Meaning | Default |
 | --- | --- | --- |
+| `-r REGION` | `fr` (default) or `be`: location, phone, and the Belgian city on the CV | `fr` |
 | `-d DIR` | output directory | `~/Documents/pro/CV/Belgique` |
 | `-c COMPANY` | tailored mode: create `DIR/COMPANY/` | — (generic) |
 | `-f FILE.pdf` | output PDF name (`.pdf` added if missing) | `Sebastien_Billion_Resume.pdf` |

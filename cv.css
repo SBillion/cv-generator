@@ -16,7 +16,6 @@
 * { box-sizing: border-box; }
 
 html {
-  background: var(--paper);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -77,7 +76,8 @@ body {
 }
 .sidebar h3:first-of-type { margin-top: 0; }
 .sidebar p { font-size: 8.5pt; margin: 0 0 2px; }
-.sidebar ul { margin: 1.5mm 0 0; padding-left: 11px; }
+.sidebar ul { margin: 1.5mm 0 0 8px; padding-left: 12px; }
+.sidebar li::marker { color: var(--accent); }
 .sidebar ul.plain { list-style: none; padding-left: 0; }
 .sidebar ul.plain li { margin: 0 0 1.5mm; }
 .sidebar li { font-size: 8.4pt; margin: 0 0 2.5px; }

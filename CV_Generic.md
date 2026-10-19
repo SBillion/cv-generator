@@ -13,6 +13,7 @@ Senior Software Engineer — Python · Backend · Cloud · Data Platform
 ### Details
 
 <ul class="plain">
+<li>{{LOCATION}}</li>
 <li>{{PHONE}}</li>
 <li>{{EMAIL}}</li>
 <li>Driving licence: yes</li>
@@ -79,7 +80,7 @@ coding, review and automation; also self-hosted a Qwen3.8 LLM on SaladCloud.
 Datadog, Kubernetes, GCP, Docker, RabbitMQ, Redis, API gateway, Load balancer,
 Jira, Confluence.
 
-### Career Break — Offensive Security Training
+### Career Break — Offensive Security Training{{PLACE}}
 
 **Nov 2024 – Dec 2025**
 
