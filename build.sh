@@ -112,6 +112,9 @@ render_md() {
 # Application mode: a folder holds CV.md (and optionally LETTRE.md).
 if [ -n "$APP_DIR" ]; then
   render_md "$APP_DIR/CV.md" cv.css "$TARGET_DIR/CV.pdf" "CV"
+  if [ -f "$APP_DIR/LETTRE.md" ]; then
+    render_md "$APP_DIR/LETTRE.md" letter.css "$TARGET_DIR/LETTRE.pdf" "Letter"
+  fi
   exit 0
 fi
 

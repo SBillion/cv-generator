@@ -1,0 +1,64 @@
+@page {
+  size: A4;
+  margin: 20mm 22mm;
+}
+
+:root {
+  --ink: #1c1c1c;
+  --muted: #6a6a6a;
+  --accent: #8a3b22;
+  --rule: #e6e4e0;
+  --paper: #fcfcfb;
+  --display: "Bodoni 72", "Bodoni 72 Oldstyle", "Didot", "Baskerville", Georgia, serif;
+  --sans: "Avenir Next", "Avenir", "Optima", "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Pandoc's auto title header — hidden; the letter has its own head block. */
+#title-block-header { display: none; }
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 10.5pt;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.letter-head {
+  padding-bottom: 4mm;
+  margin-bottom: 8mm;
+  border-bottom: 1.5px solid var(--accent);
+}
+.letter-head h1 {
+  font-family: var(--display);
+  font-size: 20pt;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  margin: 0 0 2mm;
+}
+.letter-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 9.5pt;
+}
+
+.recipient,
+.meta {
+  color: var(--muted);
+  font-size: 9.5pt;
+  margin-bottom: 6mm;
+}
+
+p { margin: 0 0 3.5mm; }
+
+a { color: var(--accent); text-decoration: none; }
+
+h2, h3 { break-after: avoid; }
+p { break-inside: avoid; }
