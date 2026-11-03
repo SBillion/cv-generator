@@ -114,6 +114,10 @@ if [ -n "$APP_DIR" ]; then
   render_md "$APP_DIR/CV.md" cv.css "$TARGET_DIR/CV.pdf" "CV"
   if [ -f "$APP_DIR/LETTRE.md" ]; then
     render_md "$APP_DIR/LETTRE.md" letter.css "$TARGET_DIR/LETTRE.pdf" "Letter"
+  elif [ -f "$TARGET_DIR/LETTRE.pdf" ]; then
+    # A rerun without the source must not leave a sendable stale letter behind.
+    rm -f "$TARGET_DIR/LETTRE.pdf"
+    echo "warning: no LETTRE.md, removed stale LETTRE.pdf" >&2
   fi
   exit 0
 fi
