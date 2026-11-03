@@ -1,7 +1,8 @@
 # cv-generator
 
-Markdown + CSS → A4 PDF CV, generic or tailored per company, built with
-[pandoc](https://pandoc.org) and headless Chrome.
+Markdown + CSS → A4 PDF CV, built with [pandoc](https://pandoc.org) and
+headless Chrome. The CV content lives in the `profil` repo: this tool only
+renders it.
 
 ## Requirements
 
@@ -12,32 +13,31 @@ Markdown + CSS → A4 PDF CV, generic or tailored per company, built with
 ## Usage
 
 ```sh
-./build.sh [-d DIR] [-c COMPANY] [-f FILE.pdf] [-h]
+./build.sh [-r fr|be] [-d DIR] [-f FILE.pdf] [-h]
 ```
 
 | Flag | Meaning | Default |
 | --- | --- | --- |
 | `-r REGION` | `fr` (default) or `be`: location, phone, and the Belgian city on the CV | `fr` |
 | `-d DIR` | output directory | `~/Documents/pro/CV/Belgique` |
-| `-c COMPANY` | tailored mode: create `DIR/COMPANY/` | — (generic) |
 | `-f FILE.pdf` | output PDF name (`.pdf` added if missing) | `Sebastien_Billion_Resume.pdf` |
 | `-h` | show help | — |
 
 Examples:
 
 ```sh
-./build.sh                                            # generic -> OUT_DIR/Sebastien_Billion_Resume.pdf
-./build.sh -d ~/Documents/Jobs/CV/Belgique            # generic into that folder
-./build.sh -d ~/Documents/Jobs/CV/Belgique -c Acme    # tailored: .../Belgique/Acme/CV_Acme.md + PDF
-./build.sh -c Acme -f billion                         # .../Acme/billion.pdf
+./build.sh                                            # -> OUT_DIR/Sebastien_Billion_Resume.pdf
+./build.sh -d ~/Documents/Jobs/CV/Belgique            # into that folder
+./build.sh -r be -f billion                           # Belgian contact details, custom name
 ```
 
-In tailored mode, the first run seeds `CV_<COMPANY>.md` from `CV_Generic.md`.
-Edit that file, then run the same command again to regenerate the PDF.
+The CV is read from `$PROFIL_DIR/CV.md`, where `PROFIL_DIR` defaults to
+`../profil` relative to this script (override it in the environment to point
+elsewhere). `secrets.env` remains the only source of real contact details.
 
 ## Contact placeholders
 
-The Markdown files use `{{PHONE}}` and `{{EMAIL}}`. Real values
+The Markdown source uses `{{PHONE}}` and `{{EMAIL}}`. Real values
 are read from `secrets.env` (gitignored) and injected at build time:
 
 ```sh
@@ -51,8 +51,8 @@ Without `secrets.env`, the placeholders are left untouched in the PDF.
 ```
 build.sh                  build script (flags above)
 cv.css                    print stylesheet (A4)
-CV_Generic.md             generic CV template (placeholders)
 secrets.env.example       template for local contact details
-examples/                 reference tailored CVs (placeholders)
 photo.jpeg                your photo (gitignored, optional)
 ```
+
+The CV content itself is not here: it lives in `$PROFIL_DIR/CV.md`.
