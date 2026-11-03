@@ -64,9 +64,9 @@ coding, review and automation; also self-hosted a Qwen3.8 LLM on SaladCloud.
 
 ### Freelance — Senior Backend Python Developer, Back Market (full remote)
 
-**Jan 2026 – Present**
+**Jan 2026 – Sep 2026**
 
-- Contribute to a cross-functional squad to design and deliver features in a
+- Contributed to a cross-functional squad to design and deliver features in a
   microservices environment following sprint planning.
 - Designed and launched a new FastAPI microservice and integrated it with
   existing platform components to accelerate feature delivery.
