@@ -6,6 +6,7 @@
 #
 # Render:  build.sh
 # Render:  build.sh -d ~/Documents/Jobs/CV/Belgique -r be
+# Render:  build.sh -a candidatures/apptweak-2026-11 -r be
 #
 # Real contact details live in a gitignored secrets.env. Region (-r fr|be) picks
 # the location and phone, and whether the Belgian city is shown.
@@ -21,20 +22,24 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-h]
+Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-a DIR] [-h]
 
   -r REGION     fr (default) or be: location, phone and Belgian city on the CV
   -d DIR        output directory (default: $OUT_DIR)
   -f FILE.pdf   output PDF name (default: $PDF_NAME)
+  -a DIR        render an application folder: DIR/CV.md -> DIR/CV.pdf, plus
+                DIR/LETTRE.md -> DIR/LETTRE.pdf when that file exists.
+                The names are fixed, so -d and -f are ignored in this mode.
   -h            show this help
 EOF
 }
 
-while getopts "r:d:f:h" opt; do
+while getopts "r:d:f:a:h" opt; do
   case "$opt" in
     r) REGION=$OPTARG ;;
     d) OUT_DIR=$OPTARG ;;
     f) PDF_NAME=$OPTARG ;;
+    a) APP_DIR=$OPTARG ;;
     h) usage; exit 0 ;;
     *) usage; exit 2 ;;
   esac
@@ -50,9 +55,13 @@ case "$PDF_NAME" in
   *) PDF_NAME="$PDF_NAME.pdf" ;;
 esac
 
-# Resolve the target directory and the Markdown source.
-TARGET_DIR="$OUT_DIR"
-SRC_MD="$PROFIL_DIR/CV.md"
+# Resolve the target directory; the application mode has fixed file names.
+if [ -n "$APP_DIR" ]; then
+  TARGET_DIR="$APP_DIR"
+  [ -f "$APP_DIR/CV.md" ] || { echo "error: no CV.md in application folder: $APP_DIR" >&2; exit 1; }
+else
+  TARGET_DIR="$OUT_DIR"
+fi
 mkdir -p "$TARGET_DIR"
 
 # Load real values (gitignored) when present; otherwise placeholders stay as-is.
@@ -72,23 +81,38 @@ esac
 BUILD_DIR=$(mktemp -d)
 trap 'rm -rf "$BUILD_DIR"' EXIT
 cp "$SRC_DIR/cv.css" "$BUILD_DIR/cv.css"
+if [ -f "$SRC_DIR/letter.css" ]; then
+  cp "$SRC_DIR/letter.css" "$BUILD_DIR/letter.css"
+fi
 if [ -f "$SRC_DIR/photo.jpeg" ]; then
   cp "$SRC_DIR/photo.jpeg" "$BUILD_DIR/photo.jpeg"
 fi
 
-sed \
-  -e "s|{{LOCATION}}|$LOC|g" \
-  -e "s|{{PHONE}}|$PHN|g" \
-  -e "s|{{EMAIL}}|$EMAIL|g" \
-  -e "s|{{PLACE}}|$PLACE|g" \
-  "$SRC_MD" > "$BUILD_DIR/cv.md"
+# render_md SRC_MD CSS_FILE OUT_PDF TITLE
+render_md() {
+  _md=$1; _css=$2; _out=$3; _title=$4
+  sed \
+    -e "s|{{LOCATION}}|$LOC|g" \
+    -e "s|{{PHONE}}|$PHN|g" \
+    -e "s|{{EMAIL}}|$EMAIL|g" \
+    -e "s|{{PLACE}}|$PLACE|g" \
+    "$_md" > "$BUILD_DIR/render.md"
 
-pandoc "$BUILD_DIR/cv.md" -f markdown -t html5 -s \
-  --metadata title="CV" -c cv.css -o "$BUILD_DIR/cv.html"
+  pandoc "$BUILD_DIR/render.md" -f markdown -t html5 -s \
+    --metadata title="$_title" -c "$_css" -o "$BUILD_DIR/render.html"
 
-"$CHROME" --headless=new --disable-gpu --no-pdf-header-footer \
-  --print-to-pdf="$BUILD_DIR/out.pdf" "file://$BUILD_DIR/cv.html" 2>/dev/null
+  "$CHROME" --headless=new --disable-gpu --no-pdf-header-footer \
+    --print-to-pdf="$BUILD_DIR/render.pdf" "file://$BUILD_DIR/render.html" 2>/dev/null
 
-[ -s "$BUILD_DIR/out.pdf" ] || { echo "error: PDF generation failed" >&2; exit 1; }
-mv "$BUILD_DIR/out.pdf" "$TARGET_DIR/$PDF_NAME"
-echo "generated: $TARGET_DIR/$PDF_NAME"
+  [ -s "$BUILD_DIR/render.pdf" ] || { echo "error: PDF generation failed for $_md" >&2; exit 1; }
+  mv "$BUILD_DIR/render.pdf" "$_out"
+  echo "generated: $_out"
+}
+
+# Application mode: a folder holds CV.md (and optionally LETTRE.md).
+if [ -n "$APP_DIR" ]; then
+  render_md "$APP_DIR/CV.md" cv.css "$TARGET_DIR/CV.pdf" "CV"
+  exit 0
+fi
+
+render_md "$PROFIL_DIR/CV.md" cv.css "$TARGET_DIR/$PDF_NAME" "CV"
