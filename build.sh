@@ -1,39 +1,39 @@
 #!/bin/sh
 # CV generator: Markdown + CSS -> A4 PDF (pandoc + headless Chrome).
 #
-# Generic:  build.sh
-# Generic:  build.sh -d ~/Documents/Jobs/CV/Belgique
-# Tailored: build.sh -d ~/Documents/Jobs/CV/Belgique -c Acme
-# Custom:   build.sh -c Acme -f billion.pdf
+# The CV source is the canonical archive in the profil repo: PROFIL_DIR/CV.md
+# (PROFIL_DIR defaults to ../profil next to this script). No local copy exists.
+#
+# Render:  build.sh
+# Render:  build.sh -d ~/Documents/Jobs/CV/Belgique -r be
 #
 # Real contact details live in a gitignored secrets.env. Region (-r fr|be) picks
 # the location and phone, and whether the Belgian city is shown.
 set -eu
 
 SRC_DIR=$(cd "$(dirname "$0")" && pwd)
+PROFIL_DIR=${PROFIL_DIR:-$SRC_DIR/../profil}
 OUT_DIR="$HOME/Documents/pro/CV/Belgique"
-COMPANY=""
+APP_DIR=""
 REGION="fr"
 PDF_NAME="Sebastien_Billion_Resume.pdf"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [-r fr|be] [-d DIR] [-c COMPANY] [-f FILE.pdf] [-h]
+Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-h]
 
   -r REGION     fr (default) or be: location, phone and Belgian city on the CV
   -d DIR        output directory (default: $OUT_DIR)
-  -c COMPANY    tailored mode: create DIR/COMPANY/ and build from CV_COMPANY.md
   -f FILE.pdf   output PDF name (default: $PDF_NAME)
   -h            show this help
 EOF
 }
 
-while getopts "r:d:c:f:h" opt; do
+while getopts "r:d:f:h" opt; do
   case "$opt" in
     r) REGION=$OPTARG ;;
     d) OUT_DIR=$OPTARG ;;
-    c) COMPANY=$OPTARG ;;
     f) PDF_NAME=$OPTARG ;;
     h) usage; exit 0 ;;
     *) usage; exit 2 ;;
@@ -51,20 +51,9 @@ case "$PDF_NAME" in
 esac
 
 # Resolve the target directory and the Markdown source.
-if [ -n "$COMPANY" ]; then
-  SLUG=$(printf '%s' "$COMPANY" | tr ' ' '_')
-  TARGET_DIR="$OUT_DIR/$COMPANY"
-  SRC_MD="$TARGET_DIR/CV_$SLUG.md"
-else
-  TARGET_DIR="$OUT_DIR"
-  SRC_MD="$SRC_DIR/CV_Generic.md"
-fi
+TARGET_DIR="$OUT_DIR"
+SRC_MD="$PROFIL_DIR/CV.md"
 mkdir -p "$TARGET_DIR"
-
-# Tailored: seed the company Markdown from the generic template the first time.
-if [ -n "$COMPANY" ] && [ ! -f "$SRC_MD" ]; then
-  cp "$SRC_DIR/CV_Generic.md" "$SRC_MD"
-fi
 
 # Load real values (gitignored) when present; otherwise placeholders stay as-is.
 if [ -f "$SRC_DIR/secrets.env" ]; then
