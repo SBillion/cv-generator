@@ -195,6 +195,11 @@ if [ -n "$APP_DIR" ]; then
 fi
 
 if [ "$PUBLIC" = 1 ]; then
+  # Validate before the first render: a malformed region must leave nothing written.
+  check_private_region "$PROFIL_DIR/CV.md"
+  # One call, two PDFs: the private archive keeps -d/-f, the public copy has its
+  # own fixed path. Each render states its mode so neither can inherit the other.
+  render_md "$PROFIL_DIR/CV.md" cv.css "$TARGET_DIR/$PDF_NAME" "CV" prive
   render_md "$PROFIL_DIR/CV.md" cv.css "$PUBLIC_PDF" "CV" public
   echo "published: $PUBLIC_PDF"
 else
