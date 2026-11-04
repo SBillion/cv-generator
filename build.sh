@@ -7,6 +7,7 @@
 # Render:  build.sh
 # Render:  build.sh -d ~/Documents/Jobs/CV/Belgique -r be
 # Render:  build.sh -a candidatures/apptweak-2026-11 -r be
+# Publish: build.sh -p   (private archive + anonymised copy in ../website/public)
 #
 # Real contact details live in a gitignored secrets.env. Region (-r fr|be) picks
 # the location and phone, and whether the Belgian city is shown.
@@ -31,7 +32,7 @@ Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-a DIR] [-p] [-h]
   -a DIR        render an application folder: DIR/CV.md -> DIR/CV.pdf, plus
                 DIR/LETTRE.md -> DIR/LETTRE.pdf when that file exists.
                 The names are fixed, so -d and -f are ignored in this mode.
-  -p            publish: render the anonymised CV to the website repo at
+  -p            publish: render the private archive, then the anonymised CV to
                 \$WEBSITE_DIR/public/sebastien-billion-cv.pdf (contact details
                 stripped). Cannot be combined with -a.
   -h            show this help
