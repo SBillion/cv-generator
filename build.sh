@@ -145,14 +145,17 @@ check_private_region() {
 }
 
 # render_md SRC_MD CSS_FILE OUT_PDF TITLE [MODE]
-# MODE: prive (default) or public. Blanking {{PHONE}}/{{EMAIL}} is local to this
-# render: the script-level values stay real, so a private render in the same call
-# keeps its contact details.
+# MODE: prive (default) or public. Blanking {{PHONE}}/{{EMAIL}} and coarsening
+# {{LOCATION}} is local to this render: the script-level values stay real, so a
+# private render in the same call keeps its contact details.
 render_md() {
   _md=$1; _css=$2; _out=$3; _title=$4; _mode=${5:-prive}
   case "$_mode" in
-    public) _phn=""; _mail="" ;;
-    *) _phn=$PHN; _mail=$EMAIL ;;
+    # The published copy keeps a country, never a street or a postcode: the PDF
+    # is downloaded, forwarded and indexed, and the site already says how to get
+    # in touch.
+    public) _phn=""; _mail=""; _loc=${LOCATION_PUBLIC_TEXT:-Belgique} ;;
+    *) _phn=$PHN; _mail=$EMAIL; _loc=$LOC ;;
   esac
 
   if [ "$_mode" = public ]; then
@@ -166,7 +169,7 @@ render_md() {
 
   sed -e "$_private_filter" "$_md" \
     | sed \
-      -e "s|{{LOCATION}}|$LOC|g" \
+      -e "s|{{LOCATION}}|$_loc|g" \
       -e "s|{{PHONE}}|$_phn|g" \
       -e "s|{{EMAIL}}|$_mail|g" \
       -e "s|{{PLACE}}|$PLACE|g" > "$BUILD_DIR/render.md"
