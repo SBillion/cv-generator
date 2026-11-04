@@ -16,13 +16,14 @@ SRC_DIR=$(cd "$(dirname "$0")" && pwd)
 PROFIL_DIR=${PROFIL_DIR:-$SRC_DIR/../profil}
 OUT_DIR="$HOME/Documents/pro/CV/Belgique"
 APP_DIR=""
+PUBLIC=0
 REGION="fr"
 PDF_NAME="Sebastien_Billion_Resume.pdf"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-a DIR] [-h]
+Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-a DIR] [-p] [-h]
 
   -r REGION     fr (default) or be: location, phone and Belgian city on the CV
   -d DIR        output directory (default: $OUT_DIR)
@@ -30,16 +31,20 @@ Usage: $(basename "$0") [-r fr|be] [-d DIR] [-f FILE.pdf] [-a DIR] [-h]
   -a DIR        render an application folder: DIR/CV.md -> DIR/CV.pdf, plus
                 DIR/LETTRE.md -> DIR/LETTRE.pdf when that file exists.
                 The names are fixed, so -d and -f are ignored in this mode.
+  -p            publish: render the anonymised CV to the website repo at
+                \$WEBSITE_DIR/public/sebastien-billion-cv.pdf (contact details
+                stripped). Cannot be combined with -a.
   -h            show this help
 EOF
 }
 
-while getopts "r:d:f:a:h" opt; do
+while getopts "r:d:f:a:ph" opt; do
   case "$opt" in
     r) REGION=$OPTARG ;;
     d) OUT_DIR=$OPTARG ;;
     f) PDF_NAME=$OPTARG ;;
     a) APP_DIR=$OPTARG ;;
+    p) PUBLIC=1 ;;
     h) usage; exit 0 ;;
     *) usage; exit 2 ;;
   esac
@@ -54,6 +59,14 @@ case "$PDF_NAME" in
   *.pdf) ;;
   *) PDF_NAME="$PDF_NAME.pdf" ;;
 esac
+
+# The public mode writes into another repo on a fixed path; -a writes fixed names
+# into an application folder. Mixing them would publish an application CV.
+if [ "$PUBLIC" = 1 ] && [ -n "$APP_DIR" ]; then
+  echo "error: -p cannot be combined with -a" >&2
+  usage >&2
+  exit 2
+fi
 
 # Resolve the target directory; the application mode has fixed file names.
 if [ -n "$APP_DIR" ]; then
@@ -77,6 +90,28 @@ esac
 [ -n "$PHN" ] || PHN='{{PHONE}}'
 [ -n "${EMAIL:-}" ] || EMAIL='{{EMAIL}}'
 
+# Publishing must never ship a placeholder or a half-known identity.
+if [ "$PUBLIC" = 1 ]; then
+  [ -f "$SRC_DIR/secrets.env" ] || {
+    echo "error: -p needs $SRC_DIR/secrets.env (real contact details, location)" >&2
+    exit 1
+  }
+  case "$REGION" in
+    be) LOC_PUBLIC=${LOCATION_BE:-} ;;
+    *) LOC_PUBLIC=${LOCATION_FR:-} ;;
+  esac
+  [ -n "$LOC_PUBLIC" ] || {
+    echo "error: -p needs a non-empty location for region '$REGION' in $SRC_DIR/secrets.env" >&2
+    exit 1
+  }
+  WEBSITE_DIR=${WEBSITE_DIR:-$SRC_DIR/../website}
+  PUBLIC_PDF="$WEBSITE_DIR/public/sebastien-billion-cv.pdf"
+  [ -d "$WEBSITE_DIR/public" ] || {
+    echo "error: -p writes to $WEBSITE_DIR/public, which does not exist" >&2
+    exit 1
+  }
+fi
+
 # Build in a temp dir so relative assets resolve and nothing leaks into output.
 BUILD_DIR=$(mktemp -d)
 trap 'rm -rf "$BUILD_DIR"' EXIT
@@ -88,15 +123,52 @@ if [ -f "$SRC_DIR/photo.jpeg" ]; then
   cp "$SRC_DIR/photo.jpeg" "$BUILD_DIR/photo.jpeg"
 fi
 
-# render_md SRC_MD CSS_FILE OUT_PDF TITLE
+# A private region is removed with a sed range: an unclosed opener would delete
+# everything to EOF and publish a truncated CV, so refuse before any render.
+check_private_region() {
+  _md=$1
+  _open=$(grep -c -x -F '<!-- private -->' "$_md" || true)
+  _close=$(grep -c -x -F '<!-- /private -->' "$_md" || true)
+  if [ "$_open" -ne 1 ] || [ "$_close" -ne 1 ]; then
+    echo "error: malformed private region in $_md: expected exactly one" >&2
+    echo "       '<!-- private -->' and one '<!-- /private -->'" >&2
+    exit 1
+  fi
+  _first=$(grep -n -x -F '<!-- private -->' "$_md" | cut -d: -f1)
+  _last=$(grep -n -x -F '<!-- /private -->' "$_md" | cut -d: -f1)
+  if [ "$_first" -ge "$_last" ]; then
+    echo "error: malformed private region in $_md: '<!-- /private -->' comes" >&2
+    echo "       before '<!-- private -->'" >&2
+    exit 1
+  fi
+}
+
+# render_md SRC_MD CSS_FILE OUT_PDF TITLE [MODE]
+# MODE: prive (default) or public. Blanking {{PHONE}}/{{EMAIL}} is local to this
+# render: the script-level values stay real, so a private render in the same call
+# keeps its contact details.
 render_md() {
-  _md=$1; _css=$2; _out=$3; _title=$4
-  sed \
-    -e "s|{{LOCATION}}|$LOC|g" \
-    -e "s|{{PHONE}}|$PHN|g" \
-    -e "s|{{EMAIL}}|$EMAIL|g" \
-    -e "s|{{PLACE}}|$PLACE|g" \
-    "$_md" > "$BUILD_DIR/render.md"
+  _md=$1; _css=$2; _out=$3; _title=$4; _mode=${5:-prive}
+  case "$_mode" in
+    public) _phn=""; _mail="" ;;
+    *) _phn=$PHN; _mail=$EMAIL ;;
+  esac
+
+  if [ "$_mode" = public ]; then
+    check_private_region "$_md"
+    # Drop the whole region before substitution: no empty bullet survives.
+    _private_filter='/^<!-- private -->$/,/^<!-- \/private -->$/d'
+  else
+    # Markers only (pandoc drops HTML comments): keeps both modes symmetric.
+    _private_filter='/^<!-- private -->$/d;/^<!-- \/private -->$/d'
+  fi
+
+  sed -e "$_private_filter" "$_md" \
+    | sed \
+      -e "s|{{LOCATION}}|$LOC|g" \
+      -e "s|{{PHONE}}|$_phn|g" \
+      -e "s|{{EMAIL}}|$_mail|g" \
+      -e "s|{{PLACE}}|$PLACE|g" > "$BUILD_DIR/render.md"
 
   pandoc "$BUILD_DIR/render.md" -f markdown -t html5 -s \
     --metadata title="$_title" -c "$_css" -o "$BUILD_DIR/render.html"
@@ -122,4 +194,9 @@ if [ -n "$APP_DIR" ]; then
   exit 0
 fi
 
-render_md "$PROFIL_DIR/CV.md" cv.css "$TARGET_DIR/$PDF_NAME" "CV"
+if [ "$PUBLIC" = 1 ]; then
+  render_md "$PROFIL_DIR/CV.md" cv.css "$PUBLIC_PDF" "CV" public
+  echo "published: $PUBLIC_PDF"
+else
+  render_md "$PROFIL_DIR/CV.md" cv.css "$TARGET_DIR/$PDF_NAME" "CV"
+fi
