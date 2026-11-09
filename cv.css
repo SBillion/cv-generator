@@ -126,3 +126,64 @@ a { color: var(--accent); text-decoration: none; }
 /* --- Print hygiene --- */
 h2, h3 { break-after: avoid; }
 li, p { break-inside: avoid; }
+
+/* --- Dossier variant: cream page, green accent, masthead (Swift) --- */
+body:has(.cv-dossier) {
+  --paper: #f7f2e8;
+  --accent: #2f5d50;
+  background: transparent;
+}
+/* Paint the whole sheet, not just the content box, so no second white surface. */
+body:has(.cv-dossier)::before {
+  content: "";
+  position: fixed;
+  inset: -13mm -15mm -10mm;
+  background: var(--paper);
+  z-index: -1;
+}
+.cv-dossier .header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28mm;
+  gap: 8mm;
+  align-items: start;
+  border-bottom: 1.5px solid var(--accent);
+  padding-bottom: 5mm;
+  margin-bottom: 5mm;
+}
+.cv-dossier .header h1 {
+  font-family: var(--display);
+  font-size: 30pt;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  margin: 0 0 2mm;
+}
+.cv-dossier .header .title {
+  margin: 0;
+  color: var(--accent);
+  font-size: 9.2pt;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.cv-dossier .contact,
+.cv-dossier .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2mm 5mm;
+  margin: 2.5mm 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 8.3pt;
+  color: var(--muted);
+}
+.cv-dossier .links { margin-top: 1.5mm; }
+.cv-dossier .links a { color: var(--accent); }
+.cv-dossier .avatar {
+  width: 28mm;
+  height: 28mm;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--rule);
+}
