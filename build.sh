@@ -20,7 +20,7 @@ APP_DIR=""
 PUBLIC=0
 REGION="fr"
 PDF_NAME="Sebastien_Billion_Resume.pdf"
-CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+CHROME=${CHROME:-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}
 
 usage() {
   cat <<EOF
