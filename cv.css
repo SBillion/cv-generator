@@ -127,63 +127,173 @@ a { color: var(--accent); text-decoration: none; }
 h2, h3 { break-after: avoid; }
 li, p { break-inside: avoid; }
 
-/* --- Dossier variant: cream page, green accent, masthead (Swift) --- */
+/* ============================================================
+   Swift dossier: editorial masthead + skills band + timeline.
+   Scoped so the AppTweak CV keeps the rail + content layout.
+   ============================================================ */
+.cv-dossier {
+  --ink: #1f1f1d;
+  --muted: #62625c;
+  --green: #2f5d50;
+  --ivory: #f7f2e8;
+  --rule: #d9d4c8;
+  position: relative;
+  color: var(--ink);
+  font-size: 9pt;
+  line-height: 1.4;
+}
+/* Full-bleed paper: the body background only paints the content box, which
+   leaves a white frame around the page. A fixed layer covers the page itself. */
+.cv-dossier::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--ivory);
+  z-index: -1;
+}
+.cv-dossier h1,
+.cv-dossier h2,
+.cv-dossier h3 { color: var(--ink); }
+.cv-dossier h2 {
+  font-family: var(--display);
+  font-size: 14pt;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--green);
+  border-bottom: 1px solid var(--green);
+  padding-bottom: 2px;
+  margin: 15px 0 8px;
+}
+.cv-dossier h2:first-child { margin-top: 0; }
+.cv-dossier h3 {
+  font-size: 10.4pt;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+.cv-dossier p { margin: 0 0 5px; }
+.cv-dossier ul { margin: 2px 0 5px; padding-left: 14px; }
+.cv-dossier li { margin: 0 0 2px; }
+.cv-dossier a { color: var(--green); text-decoration: none; }
+
+/* Masthead */
+.cv-dossier .masthead {
+  display: grid;
+  grid-template-columns: 1fr 30mm;
+  gap: 8mm;
+  align-items: start;
+  border-bottom: 2px solid var(--green);
+  padding-bottom: 5mm;
+  margin-bottom: 6mm;
+  break-after: avoid;
+}
+.cv-dossier .masthead h1 {
+  font-family: var(--display);
+  font-size: 34pt;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  margin: 0 0 2mm;
+}
+.cv-dossier .masthead-role {
+  margin: 0 0 3mm;
+  color: var(--green);
+  font-size: 9.2pt;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.cv-dossier .masthead-contact,
+.cv-dossier .masthead-links {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 1mm 7mm;
+  margin: 0 0 1.5mm;
+  padding: 0;
+  list-style: none;
+  font-size: 8.6pt;
+}
+.cv-dossier .masthead-contact { color: var(--muted); }
+.cv-dossier .masthead-links { color: var(--green); }
+.cv-dossier .avatar {
+  width: 30mm;
+  height: 30mm;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 0 0 3px var(--ivory), 0 0 0 4px var(--green);
+}
+
+/* Skills band */
+.cv-dossier .skills-band {
+  margin: 5mm 0 6mm;
+  padding: 4mm 0 4mm;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  break-inside: avoid;
+}
+.cv-dossier .skills-band h3 {
+  color: var(--green);
+  font-size: 7.4pt;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 2.5mm;
+}
+.cv-dossier .skills-band ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5mm 8mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cv-dossier .skills-band li {
+  font-size: 8.4pt;
+  line-height: 1.4;
+}
+.cv-dossier .skills-band strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Timeline */
+.cv-dossier .timeline {
+  display: contents;
+}
+.cv-dossier .role {
+  display: grid;
+  grid-template-columns: 24% minmax(0, 1fr);
+  gap: 0 6mm;
+  padding: 2.8mm 0 3.0mm;
+  border-top: 1px solid var(--rule);
+  break-inside: avoid;
+}
+.cv-dossier .role:first-child { border-top: 0; }
+.cv-dossier .role-date {
+  color: var(--green);
+  font-size: 7.6pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  break-after: avoid;
+}
+.cv-dossier .role-body { min-width: 0; }
+.cv-dossier .role-body li::marker { color: var(--green); }
+.cv-dossier .role-body strong { color: var(--green); font-weight: 600; }
+
+/* The page canvas must be the dossier ivory edge-to-edge, including the
+   printed margins; the body background alone leaves a white frame. */
 body:has(.cv-dossier) {
   --paper: #f7f2e8;
   --accent: #2f5d50;
-  background: transparent;
+  background: var(--paper);
 }
-/* Paint the whole sheet, not just the content box, so no second white surface. */
 body:has(.cv-dossier)::before {
   content: "";
   position: fixed;
   inset: -13mm -15mm -10mm;
   background: var(--paper);
   z-index: -1;
-}
-.cv-dossier .header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 28mm;
-  gap: 8mm;
-  align-items: start;
-  border-bottom: 1.5px solid var(--accent);
-  padding-bottom: 5mm;
-  margin-bottom: 5mm;
-}
-.cv-dossier .header h1 {
-  font-family: var(--display);
-  font-size: 30pt;
-  font-weight: 400;
-  letter-spacing: 0.005em;
-  margin: 0 0 2mm;
-}
-.cv-dossier .header .title {
-  margin: 0;
-  color: var(--accent);
-  font-size: 9.2pt;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-.cv-dossier .contact,
-.cv-dossier .links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2mm 5mm;
-  margin: 2.5mm 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 8.3pt;
-  color: var(--muted);
-}
-.cv-dossier .links { margin-top: 1.5mm; }
-.cv-dossier .links a { color: var(--accent); }
-.cv-dossier .avatar {
-  width: 28mm;
-  height: 28mm;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0;
-  box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--rule);
 }
