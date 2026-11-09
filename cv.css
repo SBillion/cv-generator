@@ -3,6 +3,11 @@
   margin: 13mm 15mm 10mm;
 }
 
+@page dossier {
+  size: A4;
+  margin: 0;
+}
+
 :root {
   --ink: #1c1c1c;
   --muted: #6a6a6a;
@@ -138,10 +143,21 @@ li, p { break-inside: avoid; }
   --ivory: #f7f2e8;
   --rule: #d9d4c8;
   position: relative;
+  page: dossier;
   color: var(--ink);
   font-size: 9pt;
   line-height: 1.4;
 }
+
+.cv-dossier .page {
+  width: 210mm;
+  min-height: 297mm;
+  box-sizing: border-box;
+  padding: 13mm 15mm 10mm;
+  background: var(--ivory);
+  break-after: page;
+}
+.cv-dossier .page:last-child { break-after: auto; }
 /* Full-bleed paper: the body background only paints the content box, which
    leaves a white frame around the page. A fixed layer covers the page itself. */
 .cv-dossier::before {
