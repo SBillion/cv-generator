@@ -229,7 +229,13 @@ li, p { break-inside: avoid; }
   font-size: 8.6pt;
 }
 .cv-dossier .masthead-contact { color: var(--muted); }
-.cv-dossier .masthead-links { color: var(--green); }
+.cv-dossier .masthead-links {
+  color: var(--green);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 7mm;
+}
+.cv-dossier .masthead-links li { margin: 0; }
 .cv-dossier .avatar {
   width: 30mm;
   height: 30mm;
