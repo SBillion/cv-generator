@@ -158,6 +158,14 @@ li, p { break-inside: avoid; }
   break-after: page;
 }
 .cv-dossier .page:last-child { break-after: auto; }
+
+/* Flowing dossier: same visual system, automatic A4 pagination. */
+.cv-dossier.flow { page: auto; font-size: 8.6pt; line-height: 1.34; }
+.cv-dossier.flow .timeline { display: block; }
+.cv-dossier.flow .role { break-inside: avoid; padding: 2.2mm 0; }
+.cv-dossier.flow .skills-band { margin: 3mm 0 4mm; padding: 3mm 0; }
+.cv-dossier.flow .masthead { padding-bottom: 4mm; margin-bottom: 5mm; }
+.cv-dossier.flow h2 { margin: 10px 0 6px; }
 /* Full-bleed paper: the body background only paints the content box, which
    leaves a white frame around the page. A fixed layer covers the page itself. */
 .cv-dossier::before {
