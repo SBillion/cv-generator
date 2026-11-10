@@ -172,7 +172,6 @@ li, p { break-inside: avoid; }
 .cv-dossier.flow h2 { margin: 6px 0 4px; }
 .cv-dossier.flow .role { padding: 1.5mm 0; break-inside: auto; }
 .cv-dossier.flow .timeline { display: block; }
-.cv-dossier.flow .page-break { break-before: page; }
 
 /* Full-bleed paper: the body background only paints the content box, which
    leaves a white frame around the page. A fixed layer covers the page itself. */
